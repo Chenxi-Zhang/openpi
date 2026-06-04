@@ -5,6 +5,8 @@ import {
   DISPLAY_PREFERENCES_CHANGED_EVENT,
   loadDisplayPreferences,
 } from '../lib/displayPreferences'
+import { changeLanguage } from '../lib/i18n'
+import { syncLocaleSignal } from '../lib/i18n/useTranslation'
 import type { AppInfo } from '../lib/ipc'
 import type { KeybindingOverrides } from '../lib/keybindings'
 import { KEYBINDINGS_CHANGED_EVENT, loadCustomKeybindings } from '../lib/keybindings'
@@ -32,6 +34,16 @@ export function useAppPrefs(options: UseAppPrefsOptions) {
       .catch(() => {})
     loadCustomKeybindings()
       .then(options.setCustomKeybindings)
+      .catch(() => {})
+
+    window.openpi
+      .getPref('language')
+      .then((lang) => {
+        if (lang === 'en' || lang === 'zh-CN') {
+          changeLanguage(lang)
+          syncLocaleSignal(lang)
+        }
+      })
       .catch(() => {})
 
     const onDisplayPreferencesChanged = (event: Event) => {
