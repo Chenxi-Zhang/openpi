@@ -176,12 +176,14 @@ describe('ProviderListView DeepSeek recommendation rendering', () => {
         promptInput=""
         showDeepSeekRecommended={opts.showRecommended}
         showDeepSeekReady={opts.showReady}
+        existingCustomIds={new Set()}
         onClose={() => {}}
         onSearch={() => {}}
         onSearchRef={() => {}}
         onPromptRef={() => {}}
         onPromptInput={() => {}}
         onAddCustom={() => {}}
+        onQuickAdd={() => {}}
         onToggleExpanded={() => {}}
         onApiKeyInput={() => {}}
         onCancelKey={() => {}}
@@ -231,12 +233,14 @@ describe('ProviderListView DeepSeek recommendation rendering', () => {
         promptInput=""
         showDeepSeekRecommended={true}
         showDeepSeekReady={false}
+        existingCustomIds={new Set()}
         onClose={() => {}}
         onSearch={() => {}}
         onSearchRef={() => {}}
         onPromptRef={() => {}}
         onPromptInput={() => {}}
         onAddCustom={() => {}}
+        onQuickAdd={() => {}}
         onToggleExpanded={() => {}}
         onApiKeyInput={() => {}}
         onCancelKey={() => {}}

@@ -35,6 +35,7 @@ export const PROVIDER_DISPLAY_NAMES: Record<string, string> = {
   'xiaomi-token-plan-cn': 'Xiaomi MiMo (China)',
   'xiaomi-token-plan-sgp': 'Xiaomi MiMo (Singapore)',
   zai: 'ZAI',
+  zhipu: 'ZhiPu AI (智谱)',
 }
 
 /** Return a human-readable provider label, falling back to title-casing the id */

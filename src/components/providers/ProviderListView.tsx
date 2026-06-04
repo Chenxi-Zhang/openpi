@@ -6,6 +6,7 @@ import type { CustomProviderInfo, ProviderInfo } from '../../lib/ipc'
 import { BuiltInProviderRow } from './BuiltInProviderRow'
 import { CustomProviderRow } from './CustomProviderRow'
 import type { LoginPhase, SUBSCRIPTION_PROVIDERS } from './providerHelpers'
+import { QUICK_ADD_PROVIDERS } from './providerHelpers'
 import { SubscriptionProviderRow } from './SubscriptionProviderRow'
 
 interface ProviderListViewProps {
@@ -24,12 +25,14 @@ interface ProviderListViewProps {
   promptInput: string
   showDeepSeekRecommended: boolean
   showDeepSeekReady: boolean
+  existingCustomIds: Set<string>
   onClose: () => void
   onSearch: (value: string) => void
   onSearchRef: (element: HTMLInputElement) => void
   onPromptRef: (element: HTMLInputElement) => void
   onPromptInput: (value: string) => void
   onAddCustom: () => void
+  onQuickAdd: (presetId: string) => void
   onToggleExpanded: (providerId: string) => void
   onApiKeyInput: (value: string) => void
   onCancelKey: () => void
@@ -45,6 +48,8 @@ interface ProviderListViewProps {
 
 export function ProviderListView(props: ProviderListViewProps) {
   const { t } = useTranslation()
+
+  const visibleQuickAdd = QUICK_ADD_PROVIDERS.filter((p) => !props.existingCustomIds.has(p.id))
 
   const renderBuiltInRow = (provider: ProviderInfo) => (
     <BuiltInProviderRow
@@ -92,6 +97,14 @@ export function ProviderListView(props: ProviderListViewProps) {
         <div class="cp-list">
           <Show when={props.showDeepSeekRecommended && !props.search}>
             <DeepSeekRecommendation />
+          </Show>
+
+          <Show when={visibleQuickAdd.length > 0 && !props.search}>
+            <For each={visibleQuickAdd}>
+              {(preset) => (
+                <QuickAddRecommendation preset={preset} onAdd={() => props.onQuickAdd(preset.id)} />
+              )}
+            </For>
           </Show>
 
           <Show when={props.visibleSubscriptions.length > 0}>
@@ -193,6 +206,39 @@ function DeepSeekRecommendation() {
           <ExternalLink size={12} strokeWidth={2} />
           <span>platform.deepseek.com</span>
         </a>
+      </div>
+    </section>
+  )
+}
+
+function QuickAddRecommendation(props: {
+  preset: (typeof QUICK_ADD_PROVIDERS)[number]
+  onAdd: () => void
+}) {
+  const { t } = useTranslation()
+
+  return (
+    <section class="cp-section cp-section--deepseek-rec">
+      <div class="cp-deepseek-rec-card">
+        <div class="cp-deepseek-rec-header">
+          <span class="cp-deepseek-rec-badge">{t(props.preset.badgeKey)}</span>
+          <span class="cp-deepseek-rec-name">{props.preset.displayName}</span>
+        </div>
+        <p class="cp-deepseek-rec-desc">{t(props.preset.descriptionKey)}</p>
+        <div class="cp-deepseek-rec-footer">
+          <a
+            class="cp-deepseek-rec-link"
+            href={props.preset.linkUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <ExternalLink size={12} strokeWidth={2} />
+            <span>{props.preset.linkLabel}</span>
+          </a>
+          <button type="button" class="cp-quick-add-btn" onClick={props.onAdd}>
+            <span>{t('providers.quickAdd')}</span>
+          </button>
+        </div>
       </div>
     </section>
   )

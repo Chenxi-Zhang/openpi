@@ -12065,6 +12065,36 @@ body.panel-dragging {
   flex-shrink: 0;
 }
 
+/* Quick-add recommendation card */
+.cp-deepseek-rec-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.cp-quick-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 26px;
+  padding: 0 12px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--hairline-strong);
+  background: transparent;
+  color: var(--graphite);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background 0.1s,
+    color 0.1s;
+}
+.cp-quick-add-btn:hover {
+  background: var(--surface-soft);
+  color: var(--ink-soft);
+}
+
 /* Header with back button */
 .cp-header-left {
   display: flex;

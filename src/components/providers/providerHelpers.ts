@@ -62,6 +62,30 @@ export const PROVIDER_DESCRIPTIONS: Record<string, string> = {
 
 export const CUSTOM_PROVIDER_ID_RE = /^[a-z][a-z0-9_-]*$/
 
+export type QuickAddProvider = {
+  id: string
+  displayName: string
+  baseUrl: string
+  models: ModelRow[]
+  descriptionKey: string
+  badgeKey: string
+  linkUrl: string
+  linkLabel: string
+}
+
+export const QUICK_ADD_PROVIDERS: QuickAddProvider[] = [
+  {
+    id: 'zhipu',
+    displayName: 'ZhiPu AI',
+    baseUrl: 'https://open.bigmodel.cn/api/paas/v4',
+    models: [{ id: 'glm-4.7-flash', name: 'GLM-4.7-Flash' }],
+    descriptionKey: 'providers.zhipuRecDesc',
+    badgeKey: 'providers.zhipuBadge',
+    linkUrl: 'https://open.bigmodel.cn',
+    linkLabel: 'open.bigmodel.cn',
+  },
+]
+
 export type View = 'list' | 'custom-form'
 
 export type LoginPhase =

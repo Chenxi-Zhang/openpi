@@ -21,6 +21,7 @@ import {
   type LoginPhase,
   type ModelRow,
   POPULAR_PROVIDER_IDS,
+  QUICK_ADD_PROVIDERS,
   SUBSCRIPTION_IDS,
   SUBSCRIPTION_PROVIDERS,
   type View,
@@ -113,6 +114,8 @@ export function ConnectProviderModal(props: Props) {
     () => providers().some((p) => p.configured) || customProviders().some((p) => p.hasApiKey)
   )
 
+  const existingCustomIds = createMemo(() => new Set(customProviders().map((p) => p.id)))
+
   const deepseekInfo = createMemo(() => providers().find((p) => p.id === 'deepseek'))
   const showDeepSeekRecommended = createMemo<boolean>(() => {
     const ds = deepseekInfo()
@@ -126,6 +129,21 @@ export function ConnectProviderModal(props: Props) {
   const openCustomForm = () => {
     setView('custom-form')
     resetForm()
+  }
+  const openQuickAddForm = (presetId: string) => {
+    const preset = QUICK_ADD_PROVIDERS.find((p) => p.id === presetId)
+    if (!preset) return
+    setView('custom-form')
+    setForm({
+      providerId: preset.id,
+      displayName: preset.displayName,
+      baseUrl: preset.baseUrl,
+      apiKey: '',
+      models: preset.models.map((m) => ({ ...m })),
+      headers: [],
+    })
+    setFormErrors({})
+    setTouched(new Set<string>())
   }
   const resetForm = () => {
     setForm(emptyForm())
@@ -225,6 +243,7 @@ export function ConnectProviderModal(props: Props) {
         promptInput={promptInput()}
         showDeepSeekRecommended={showDeepSeekRecommended()}
         showDeepSeekReady={showDeepSeekReady()}
+        existingCustomIds={existingCustomIds()}
         onClose={props.onClose}
         onSearch={setSearch}
         onSearchRef={(element) => {
@@ -235,6 +254,7 @@ export function ConnectProviderModal(props: Props) {
         }}
         onPromptInput={setPromptInput}
         onAddCustom={openCustomForm}
+        onQuickAdd={openQuickAddForm}
         onToggleExpanded={(providerId) => {
           setExpandedId(expandedId() === providerId ? null : providerId)
           setApiKeyInput('')

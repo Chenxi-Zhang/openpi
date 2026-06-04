@@ -1,5 +1,5 @@
 import path from 'node:path'
-import { BrowserWindow } from 'electron'
+import { BrowserWindow, shell } from 'electron'
 import { IPC } from '../../src/lib/ipc'
 import type { SessionIndexStore } from '../session/sessionIndex'
 import type { PtyHost } from './ptyHost'
@@ -27,6 +27,7 @@ export function createMainWindow(options: CreateWindowOptions): BrowserWindow {
     icon: appIconPath(),
     titleBarStyle: 'hiddenInset',
     backgroundColor: '#111111',
+    autoHideMenuBar: true,
     webPreferences: {
       preload: path.resolve(options.currentDir, '../preload/index.js'),
       contextIsolation: true,
@@ -53,6 +54,11 @@ export function createMainWindow(options: CreateWindowOptions): BrowserWindow {
     } else {
       void options.refreshSessionIndex()
     }
+  })
+
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+    void shell.openExternal(url)
+    return { action: 'deny' }
   })
 
   mainWindow.on('closed', options.onClosed)
