@@ -109,6 +109,20 @@ export function ConnectProviderModal(props: Props) {
     )
   })
 
+  const hasAnyConfiguredProvider = createMemo(
+    () => providers().some((p) => p.configured) || customProviders().some((p) => p.hasApiKey)
+  )
+
+  const deepseekInfo = createMemo(() => providers().find((p) => p.id === 'deepseek'))
+  const showDeepSeekRecommended = createMemo<boolean>(() => {
+    const ds = deepseekInfo()
+    return Boolean(ds && !hasAnyConfiguredProvider() && !ds.configured)
+  })
+  const showDeepSeekReady = createMemo<boolean>(() => {
+    const ds = deepseekInfo()
+    return Boolean(ds?.configured)
+  })
+
   const openCustomForm = () => {
     setView('custom-form')
     resetForm()
@@ -209,6 +223,8 @@ export function ConnectProviderModal(props: Props) {
         listSaving={listSaving()}
         loginPhase={loginPhase()}
         promptInput={promptInput()}
+        showDeepSeekRecommended={showDeepSeekRecommended()}
+        showDeepSeekReady={showDeepSeekReady()}
         onClose={props.onClose}
         onSearch={setSearch}
         onSearchRef={(element) => {

@@ -9,6 +9,7 @@ import {
   SquareTerminal,
 } from 'lucide-solid'
 import { createSignal, Show } from 'solid-js'
+import { useTranslation } from '../lib/i18n/useTranslation'
 import type { AppUpdateStatus, GoalUpdate } from '../lib/ipc'
 import { ChangelogModal } from './ChangelogModal'
 
@@ -16,7 +17,9 @@ export type LeftDrawerMode = 'threads' | 'workspace' | 'tree'
 
 const HOMEBREW_UPGRADE_COMMAND = 'brew update && brew upgrade --cask openpi'
 
-function formatGoalLabel(goal: GoalUpdate): string {
+type TFn = (key: string, options?: Record<string, unknown>) => string
+
+function formatGoalLabel(goal: GoalUpdate, t: TFn): string {
   if (!goal.objective || !goal.status) return ''
   const short = goal.objective.length > 40 ? `${goal.objective.slice(0, 37)}…` : goal.objective
   switch (goal.status) {
@@ -26,13 +29,16 @@ function formatGoalLabel(goal: GoalUpdate): string {
       }
       return `${short} (${fmtElapsed(goal.timeUsedSeconds)})`
     case 'paused':
-      return 'Goal paused'
+      return t('bottombar.goalPaused')
     case 'budget_limited':
       return goal.tokenBudget != null
-        ? `Budget used (${fmtTokens(goal.tokensUsed)} / ${fmtTokens(goal.tokenBudget)})`
-        : 'Budget used'
+        ? t('bottombar.budgetUsedWithTotals', {
+            used: fmtTokens(goal.tokensUsed),
+            budget: fmtTokens(goal.tokenBudget),
+          })
+        : t('bottombar.budgetUsed')
     case 'complete':
-      return 'Goal achieved'
+      return t('bottombar.goalAchieved')
     default:
       return short
   }
@@ -77,6 +83,7 @@ type BottomBarProps = {
 }
 
 export function BottomBar(props: BottomBarProps) {
+  const { t } = useTranslation()
   const [changelogOpen, setChangelogOpen] = createSignal(false)
   const [updateStatus, setUpdateStatus] = createSignal<AppUpdateStatus | null>(null)
   const [updateCommandCopied, setUpdateCommandCopied] = createSignal(false)
@@ -97,13 +104,13 @@ export function BottomBar(props: BottomBarProps) {
   const syncActionLabel = () => {
     switch (props.gitSyncAction) {
       case 'fetch':
-        return 'Fetching…'
+        return t('bottombar.fetching')
       case 'pull':
-        return 'Pulling…'
+        return t('bottombar.pulling')
       case 'pull-rebase':
-        return 'Pulling (rebase)…'
+        return t('bottombar.pullingRebase')
       case 'push':
-        return 'Pushing…'
+        return t('bottombar.pushing')
       default:
         return null
     }
@@ -125,7 +132,7 @@ export function BottomBar(props: BottomBarProps) {
             type="button"
             class={`bottom-bar-btn${props.leftDrawerOpen && props.leftDrawerMode === 'workspace' ? ' is-active' : ''}`}
             onClick={props.onToggleWorkspace}
-            title="Show workspaces"
+            title={t('bottombar.showWorkspaces')}
             aria-pressed={props.leftDrawerOpen && props.leftDrawerMode === 'workspace'}
           >
             <Folder size={13} />
@@ -134,8 +141,8 @@ export function BottomBar(props: BottomBarProps) {
             type="button"
             class={`bottom-bar-btn${props.leftDrawerOpen && props.leftDrawerMode === 'tree' ? ' is-active' : ''}`}
             onClick={props.onToggleTree}
-            title="Show session map"
-            aria-label="Show session map"
+            title={t('bottombar.showSessionMap')}
+            aria-label={t('bottombar.showSessionMap')}
             aria-pressed={props.leftDrawerOpen && props.leftDrawerMode === 'tree'}
           >
             <GitFork size={13} />
@@ -144,7 +151,7 @@ export function BottomBar(props: BottomBarProps) {
             type="button"
             class={`bottom-bar-btn${props.leftDrawerOpen && props.leftDrawerMode === 'threads' ? ' is-active' : ''}`}
             onClick={props.onToggleThreads}
-            title="Show thread history (⌘B)"
+            title={t('bottombar.showThreadHistory')}
             aria-pressed={props.leftDrawerOpen && props.leftDrawerMode === 'threads'}
           >
             <MessageSquareText size={13} />
@@ -152,7 +159,7 @@ export function BottomBar(props: BottomBarProps) {
           <button
             type="button"
             class="bottom-bar-btn"
-            title="What's new"
+            title={t('bottombar.whatsNew')}
             onClick={() => setChangelogOpen(true)}
           >
             <FileText size={13} />
@@ -170,7 +177,7 @@ export function BottomBar(props: BottomBarProps) {
                   <button
                     type="button"
                     class="bottom-bar-version"
-                    title="Check for updates"
+                    title={t('bottombar.checkForUpdates')}
                     onClick={() => {
                       void window.openpi.appUpdate.check().then(setUpdateStatus)
                     }}
@@ -182,13 +189,16 @@ export function BottomBar(props: BottomBarProps) {
                 <button
                   type="button"
                   class="bottom-bar-update-chip"
-                  title={`OpenPi ${updateStatus()?.latestVersion} is available — click to copy: ${HOMEBREW_UPGRADE_COMMAND}`}
+                  title={t('bottombar.updateAvailableTitle', {
+                    version: updateStatus()?.latestVersion ?? '',
+                    command: HOMEBREW_UPGRADE_COMMAND,
+                  })}
                   onClick={() => void copyUpgradeCommand()}
                 >
                   <ArrowUpCircle size={11} />
                   {updateCommandCopied()
-                    ? 'Copied brew command'
-                    : (updateStatus()?.latestVersion ?? 'Update available')}
+                    ? t('bottombar.copiedBrewCommand')
+                    : (updateStatus()?.latestVersion ?? t('bottombar.updateAvailable'))}
                 </button>
               </Show>
             }
@@ -213,19 +223,19 @@ export function BottomBar(props: BottomBarProps) {
               title={props.goalUpdate!.objective ?? ''}
             >
               <span class={`goal-indicator-dot ${props.goalUpdate!.status}`} />
-              {formatGoalLabel(props.goalUpdate!)}
+              {formatGoalLabel(props.goalUpdate!, t)}
             </span>
           </Show>
           <Show when={props.isStreaming}>
-            <span class="bottom-bar-status-pill is-live" title="Agent running">
-              running
+            <span class="bottom-bar-status-pill is-live" title={t('bottombar.agentRunning')}>
+              {t('bottombar.running')}
             </span>
           </Show>
           <button
             type="button"
             class={`bottom-bar-btn${props.gitPanelOpen ? ' is-active' : ''}`}
             onClick={props.onToggleGitPanel}
-            title="Toggle source control panel"
+            title={t('bottombar.toggleSourceControl')}
             aria-pressed={props.gitPanelOpen}
           >
             <GitBranch size={13} />
@@ -234,7 +244,7 @@ export function BottomBar(props: BottomBarProps) {
             type="button"
             class={`bottom-bar-btn${props.filePanelOpen ? ' is-active' : ''}`}
             onClick={props.onToggleFilePanel}
-            title="Toggle file tree panel"
+            title={t('bottombar.toggleFileTree')}
             aria-pressed={props.filePanelOpen}
           >
             <FolderTree size={13} />
@@ -243,7 +253,7 @@ export function BottomBar(props: BottomBarProps) {
             type="button"
             class={`bottom-bar-btn${props.terminalOpen ? ' is-active' : ''}`}
             onClick={props.onToggleTerminal}
-            title="Toggle terminal (⌘J)"
+            title={t('bottombar.toggleTerminal')}
             aria-pressed={props.terminalOpen}
           >
             <SquareTerminal size={13} />

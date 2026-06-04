@@ -1,5 +1,6 @@
 import { Check, Plus, X } from 'lucide-solid'
 import { Show } from 'solid-js'
+import { useTranslation } from '../../lib/i18n/useTranslation'
 import type { ProviderInfo } from '../../lib/ipc'
 import { getProviderLabel } from '../../lib/providers'
 import { PROVIDER_DESCRIPTIONS } from './providerHelpers'
@@ -10,6 +11,8 @@ interface BuiltInProviderRowProps {
   apiKeyInput: string
   listError: string | null
   listSaving: boolean
+  showDeepSeekRecommended: boolean
+  showDeepSeekReady: boolean
   onExpand: () => void
   onApiKeyInput: (value: string) => void
   onCancel: () => void
@@ -18,13 +21,21 @@ interface BuiltInProviderRowProps {
 }
 
 export function BuiltInProviderRow(props: BuiltInProviderRowProps) {
+  const { t } = useTranslation()
   const description = () => PROVIDER_DESCRIPTIONS[props.provider.id]
 
   return (
     <div class={`cp-provider-row ${props.provider.configured ? 'is-connected' : ''}`}>
       <div class="cp-provider-header">
         <div class="cp-provider-info">
-          <span class="cp-provider-name">{getProviderLabel(props.provider.id)}</span>
+          <span class="cp-provider-name">
+            {getProviderLabel(props.provider.id)}
+            <Show when={props.showDeepSeekRecommended}>
+              <span class="cp-provider-badge cp-provider-badge--recommended">
+                {t('providers.deepseekRecommended')}
+              </span>
+            </Show>
+          </span>
           <Show when={description()}>
             <span class="cp-provider-desc">{description()}</span>
           </Show>
@@ -38,20 +49,23 @@ export function BuiltInProviderRow(props: BuiltInProviderRowProps) {
                 type="button"
                 class={`cp-connect-btn ${props.expanded ? 'is-active' : ''}`}
                 onClick={props.onExpand}
-                title="Add API key"
+                title={t('providers.addApiKey')}
               >
                 <Plus size={12} strokeWidth={2.5} />
               </button>
             }
           >
-            <div class="cp-connected-badge">
+            <div
+              class="cp-connected-badge"
+              title={props.showDeepSeekReady ? t('providers.deepseekReady') : undefined}
+            >
               <Check size={11} strokeWidth={2.5} />
-              <span>Connected</span>
+              <span>{t('providers.connected')}</span>
               <button
                 type="button"
                 class="cp-disconnect-btn"
                 onClick={props.onRemove}
-                title="Disconnect"
+                title={t('providers.disconnect')}
               >
                 <X size={10} strokeWidth={2} />
               </button>
@@ -78,7 +92,7 @@ export function BuiltInProviderRow(props: BuiltInProviderRowProps) {
           </Show>
           <div class="cp-key-actions">
             <button type="button" class="cp-key-cancel" onClick={props.onCancel}>
-              Cancel
+              {t('providers.cancel')}
             </button>
             <button
               type="button"
@@ -86,7 +100,7 @@ export function BuiltInProviderRow(props: BuiltInProviderRowProps) {
               disabled={!props.apiKeyInput.trim() || props.listSaving}
               onClick={props.onSave}
             >
-              {props.listSaving ? 'Saving…' : 'Save'}
+              {props.listSaving ? t('providers.saving') : t('providers.save')}
             </button>
           </div>
         </div>

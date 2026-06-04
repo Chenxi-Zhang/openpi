@@ -1,5 +1,6 @@
 import { Check, Copy, ExternalLink, LogIn, LogOut } from 'lucide-solid'
 import { For, Show } from 'solid-js'
+import { useTranslation } from '../../lib/i18n/useTranslation'
 import type { ProviderInfo } from '../../lib/ipc'
 import type { LoginPhase, SUBSCRIPTION_PROVIDERS } from './providerHelpers'
 
@@ -18,6 +19,7 @@ interface SubscriptionProviderRowProps {
 }
 
 export function SubscriptionProviderRow(props: SubscriptionProviderRowProps) {
+  const { t } = useTranslation()
   const info = () => props.providers.find((provider) => provider.id === props.provider.id)
   const isConnected = () => Boolean(info()?.configured && info()?.credentialType === 'oauth')
   const isActive = () =>
@@ -51,19 +53,19 @@ export function SubscriptionProviderRow(props: SubscriptionProviderRowProps) {
                 <Show when={isActive()} fallback={<LogIn size={12} strokeWidth={2.5} />}>
                   <span class="cp-sub-spinner" />
                 </Show>
-                <span>{isActive() ? 'Signing in…' : 'Sign in'}</span>
+                <span>{isActive() ? t('providers.signingIn') : t('providers.signIn')}</span>
               </button>
             }
           >
             <div class="cp-connected-badge">
               <Check size={11} strokeWidth={2.5} />
-              <span>Connected</span>
+              <span>{t('providers.connected')}</span>
             </div>
             <button
               type="button"
               class="cp-disconnect-btn"
               onClick={() => props.onLogout(props.provider.id)}
-              title="Sign out"
+              title={t('providers.signOut')}
             >
               <LogOut size={12} strokeWidth={2} />
             </button>
@@ -71,7 +73,7 @@ export function SubscriptionProviderRow(props: SubscriptionProviderRowProps) {
         </div>
       </div>
 
-      <Show when={connectingPhase()}>{(phase) => <ConnectingFlow phase={phase()} />}</Show>
+      <Show when={connectingPhase()}>{(phase) => <ConnectingFlow phase={phase()} t={t} />}</Show>
 
       <Show when={promptingPhase()}>
         {(phase) => (
@@ -94,7 +96,7 @@ export function SubscriptionProviderRow(props: SubscriptionProviderRowProps) {
                 disabled={!props.promptInput.trim() && !phase().allowEmpty}
                 onClick={() => props.onResolvePrompt(props.provider.id)}
               >
-                Continue
+                {t('providers.continue')}
               </button>
             </div>
           </div>
@@ -127,7 +129,7 @@ export function SubscriptionProviderRow(props: SubscriptionProviderRowProps) {
           <div class="cp-oauth-flow">
             <p class="cp-key-error">{phase().message}</p>
             <button type="button" class="cp-key-cancel" onClick={props.onDismissError}>
-              Dismiss
+              {t('providers.dismiss')}
             </button>
           </div>
         )}
@@ -140,6 +142,7 @@ export function SubscriptionProviderRow(props: SubscriptionProviderRowProps) {
 
 interface ConnectingFlowProps {
   phase: Extract<LoginPhase, { phase: 'connecting' }>
+  t: (key: string, options?: Record<string, unknown>) => string
 }
 
 function ConnectingFlow(props: ConnectingFlowProps) {
@@ -156,7 +159,7 @@ function ConnectingFlow(props: ConnectingFlowProps) {
             <button
               type="button"
               class="cp-oauth-copy-btn"
-              title="Copy URL"
+              title={props.t('providers.copyUrl')}
               onClick={() => void navigator.clipboard.writeText(url())}
             >
               <Copy size={11} strokeWidth={2} />
@@ -164,7 +167,7 @@ function ConnectingFlow(props: ConnectingFlowProps) {
             <button
               type="button"
               class="cp-oauth-copy-btn"
-              title="Open in browser"
+              title={props.t('providers.openInBrowser')}
               onClick={() => void window.openpi.openExternal(url())}
             >
               <ExternalLink size={11} strokeWidth={2} />
@@ -179,13 +182,13 @@ function ConnectingFlow(props: ConnectingFlowProps) {
         >
           {(code) => (
             <div class="cp-oauth-device-code">
-              <span class="cp-oauth-device-code-label">Enter this code at the URL above:</span>
+              <span class="cp-oauth-device-code-label">{props.t('providers.deviceCodeLabel')}</span>
               <div class="cp-oauth-device-code-row">
                 <span class="cp-oauth-device-code-value">{code()}</span>
                 <button
                   type="button"
                   class="cp-oauth-copy-btn"
-                  title="Copy code"
+                  title={props.t('providers.copyCode')}
                   onClick={() => void navigator.clipboard.writeText(code())}
                 >
                   <Copy size={11} strokeWidth={2} />

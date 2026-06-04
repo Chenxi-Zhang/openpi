@@ -26,10 +26,12 @@ import { useAppPrefs } from './hooks/useAppPrefs'
 import { useOpenPiSession } from './hooks/useOpenPiSession'
 import { useWorkbenchLayout } from './hooks/useWorkbenchLayout'
 import { DEFAULT_DISPLAY_PREFERENCES, type DisplayPreferences } from './lib/displayPreferences'
+import { useTranslation } from './lib/i18n/useTranslation'
 import type { AppInfo, GitSyncAction } from './lib/ipc'
 import type { KeybindingOverrides } from './lib/keybindings'
 
 export default function App() {
+  const { t } = useTranslation()
   const session = useOpenPiSession()
 
   const [customizationsOpen, setCustomizationsOpen] = createSignal(false)
@@ -317,12 +319,12 @@ export default function App() {
                 <div
                   class={`panel-drop-zone panel-drop-zone--left${dropSide() === 'left' ? ' is-over' : ''}`}
                 >
-                  <span class="panel-drop-zone-hint">← Left of main</span>
+                  <span class="panel-drop-zone-hint">{t('shell.dropZoneLeft')}</span>
                 </div>
                 <div
                   class={`panel-drop-zone panel-drop-zone--right${dropSide() === 'right' ? ' is-over' : ''}`}
                 >
-                  <span class="panel-drop-zone-hint">Right of main →</span>
+                  <span class="panel-drop-zone-hint">{t('shell.dropZoneRight')}</span>
                 </div>
               </Show>
 

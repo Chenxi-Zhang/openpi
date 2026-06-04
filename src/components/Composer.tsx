@@ -9,6 +9,7 @@ import {
   onCleanup,
   Show,
 } from 'solid-js'
+import { useTranslation } from '../lib/i18n/useTranslation'
 import { ContextUsageButton, TpsBadge } from './composer/Badges'
 import { AgentChip, FileChip, LineCommentChip, SkillChip } from './composer/Chips'
 import { SkillPicker, SlashCommandPicker } from './composer/CommandPicker'
@@ -34,6 +35,7 @@ export { formatSlashCommandInput } from './composer/helpers'
 // ─── Main Composer ───────────────────────────────────────────────────────────
 
 export const Composer: Component<ComposerProps> = (props) => {
+  const { t } = useTranslation()
   const [shellMode, setShellMode] = createSignal(false)
 
   let textareaEl: HTMLTextAreaElement | undefined
@@ -324,14 +326,14 @@ export const Composer: Component<ComposerProps> = (props) => {
             rows={1}
             placeholder={
               shellMode()
-                ? 'Enter shell command…'
+                ? t('composer.placeholderShell')
                 : props.isStreaming
                   ? props.queueMode === 'steer'
-                    ? 'Interrupt Pi after current tool calls…'
+                    ? t('composer.placeholderInterrupt')
                     : props.queueMode === 'followup'
-                      ? 'Queue message for when Pi finishes…'
-                      : 'Message Pi…'
-                  : `Ask Pi about ${props.workspaceName}…`
+                      ? t('composer.placeholderQueue')
+                      : t('composer.placeholderMessage')
+                  : t('composer.placeholderAsk', { name: props.workspaceName })
             }
             value={props.input}
             onInput={textareaOnInput}
@@ -356,8 +358,8 @@ export const Composer: Component<ComposerProps> = (props) => {
                     setModelOpen(false)
                     setThinkingOpen(false)
                   }}
-                  title="Add context file (⌘/)"
-                  aria-label="Add context file"
+                  title={t('composer.addContextFile')}
+                  aria-label={t('composer.addContextFileAria')}
                 >
                   <Paperclip size={13} strokeWidth={2} />
                 </button>

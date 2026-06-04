@@ -1,4 +1,5 @@
 import { Check, Trash2 } from 'lucide-solid'
+import { useTranslation } from '../../lib/i18n/useTranslation'
 import type { CustomProviderInfo } from '../../lib/ipc'
 
 interface CustomProviderRowProps {
@@ -7,6 +8,8 @@ interface CustomProviderRowProps {
 }
 
 export function CustomProviderRow(props: CustomProviderRowProps) {
+  const { t } = useTranslation()
+
   return (
     <div class="cp-provider-row cp-custom-row">
       <div class="cp-provider-header">
@@ -19,13 +22,13 @@ export function CustomProviderRow(props: CustomProviderRowProps) {
         <div class="cp-provider-actions">
           <div class="cp-connected-badge">
             <Check size={11} strokeWidth={2.5} />
-            <span>Custom</span>
+            <span>{t('providers.customBadge')}</span>
           </div>
           <button
             type="button"
             class="cp-disconnect-btn"
             onClick={props.onRemove}
-            title="Remove provider"
+            title={t('providers.removeProvider')}
           >
             <Trash2 size={12} strokeWidth={2} />
           </button>

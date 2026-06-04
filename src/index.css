@@ -5631,6 +5631,57 @@ body.panel-dragging {
 .welcome-actions {
   margin-top: 8px;
 }
+.welcome-deepseek-card {
+  border: 1px solid var(--hairline);
+  border-radius: 6px;
+  background: var(--surface-soft);
+  padding: 14px 16px;
+  margin-bottom: 18px;
+}
+.welcome-deepseek-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.welcome-deepseek-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--accent);
+  border: 1px solid var(--hairline-strong);
+  border-radius: 3px;
+  padding: 2px 7px;
+}
+.welcome-deepseek-card h3 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  margin: 0 0 4px;
+}
+.welcome-deepseek-card > p {
+  font-size: 12px;
+  color: var(--graphite);
+  margin: 0 0 10px;
+  line-height: 1.5;
+}
+.welcome-deepseek-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 12px;
+}
+.welcome-deepseek-step {
+  font-size: 12px;
+  color: var(--ink-soft);
+  line-height: 1.5;
+}
+.welcome-deepseek-step > span {
+  color: var(--ash);
+  font-weight: 600;
+  margin-right: 2px;
+}
 
 @keyframes logo-enter {
   from {

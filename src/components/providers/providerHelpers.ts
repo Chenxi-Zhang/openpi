@@ -106,28 +106,28 @@ export function validateForm(form: FormState): FormErrors {
   const errors: FormErrors = {}
 
   if (!form.providerId) {
-    errors.providerId = 'Provider ID is required'
+    errors.providerId = 'providerIdRequired'
   } else if (!CUSTOM_PROVIDER_ID_RE.test(form.providerId)) {
-    errors.providerId = 'Lowercase letters, numbers, hyphens, or underscores'
+    errors.providerId = 'providerIdInvalid'
   }
 
   if (!form.baseUrl) {
-    errors.baseUrl = 'Base URL is required'
+    errors.baseUrl = 'baseUrlRequired'
   } else {
     try {
       new URL(form.baseUrl)
     } catch {
-      errors.baseUrl = 'Must be a valid URL (e.g. https://api.example.com/v1)'
+      errors.baseUrl = 'baseUrlInvalid'
     }
   }
 
   const nonEmptyModels = form.models.filter((m) => m.id.trim())
   if (nonEmptyModels.length === 0) {
-    errors.models = 'Add at least one model'
+    errors.models = 'modelsRequired'
   }
   form.models.forEach((m, i) => {
     if (m.id.trim() === '' && (m.name.trim() !== '' || form.models.length === 1)) {
-      errors[`model_${i}`] = 'Model ID is required'
+      errors[`model_${i}`] = 'modelIdRequired'
     }
   })
 

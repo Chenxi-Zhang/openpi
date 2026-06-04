@@ -1,6 +1,7 @@
 // biome-ignore-all lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: existing manage-models modal backdrop interaction is tracked separately from this release.
 import { ChevronDown, ChevronRight, Plus, Search, X } from 'lucide-solid'
 import { createMemo, createSignal, For, Show } from 'solid-js'
+import { useTranslation } from '../../lib/i18n/useTranslation'
 import type { ModelInfo } from '../../lib/ipc'
 import { getProviderLabel } from '../../lib/providers'
 
@@ -13,6 +14,7 @@ type Props = {
 }
 
 export function ManageModelsModal(props: Props) {
+  const { t } = useTranslation()
   const [search, setSearch] = createSignal('')
   const [collapsedProviders, setCollapsedProviders] = createSignal<Set<string>>(new Set())
   let _searchRef!: HTMLInputElement
@@ -62,8 +64,8 @@ export function ManageModelsModal(props: Props) {
       <div class="modal-sheet mm-sheet">
         <div class="mm-header">
           <div class="mm-header-left">
-            <h2 class="mm-title">Manage models</h2>
-            <p class="mm-subtitle">Customize which models appear in the model selector.</p>
+            <h2 class="mm-title">{t('manageModels.title')}</h2>
+            <p class="mm-subtitle">{t('manageModels.subtitle')}</p>
           </div>
           <div class="mm-header-right">
             <button
@@ -75,7 +77,7 @@ export function ManageModelsModal(props: Props) {
               }}
             >
               <Plus size={12} strokeWidth={2.5} />
-              Connect provider
+              {t('providers.connectProvider')}
             </button>
             <button type="button" class="modal-close-btn" onClick={props.onClose}>
               <X size={15} strokeWidth={2} />
@@ -90,7 +92,7 @@ export function ManageModelsModal(props: Props) {
               _searchRef = el
             }}
             class="cp-search-input"
-            placeholder="Search models or providers"
+            placeholder={t('providers.searchModelsOrProviders')}
             value={search()}
             onInput={(e) => setSearch(e.currentTarget.value)}
           />
@@ -100,8 +102,8 @@ export function ManageModelsModal(props: Props) {
           <Show when={groups().length === 0}>
             <div class="cp-empty">
               {props.models.length === 0
-                ? 'No models available. Connect a provider first.'
-                : `No models match "${search()}"`}
+                ? t('manageModels.noModels')
+                : t('manageModels.noMatch', { search: search() })}
             </div>
           </Show>
 
@@ -130,7 +132,7 @@ export function ManageModelsModal(props: Props) {
                     </span>
                     <span class="mm-provider-name">{label()}</span>
                     <span class="mm-provider-meta">
-                      {vis()}/{providerModels.length} shown
+                      {vis()}/{providerModels.length} {t('manageModels.shown')}
                     </span>
                   </button>
 
@@ -150,7 +152,11 @@ export function ManageModelsModal(props: Props) {
                               aria-checked={isVisible()}
                               class={`mm-toggle ${isVisible() ? 'is-on' : ''}`}
                               onClick={() => props.onToggle(key)}
-                              title={isVisible() ? 'Hide from picker' : 'Show in picker'}
+                              title={
+                                isVisible()
+                                  ? t('manageModels.hideFromPicker')
+                                  : t('manageModels.showInPicker')
+                              }
                             >
                               <span class="mm-toggle-thumb" />
                             </button>

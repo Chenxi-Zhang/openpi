@@ -1,6 +1,8 @@
 import { Show } from 'solid-js'
 import type { AppearancePreferences } from '../../lib/appearancePreferences'
 import { DISPLAY_PREFERENCES, type DisplayPreferenceKey } from '../../lib/displayPreferences'
+import type { SupportedLocale } from '../../lib/i18n'
+import { useTranslation } from '../../lib/i18n/useTranslation'
 import {
   NOTIFICATION_PREFERENCES,
   type NotificationPreferenceKey,
@@ -15,6 +17,7 @@ import { UpdateSection } from './UpdateSection'
 import { useGeneralPaneState } from './useGeneralPaneState'
 
 export function GeneralPane(props: GeneralPaneProps) {
+  const { t, locale, setLocale } = useTranslation()
   const {
     prefs,
     notificationPrefs,
@@ -52,12 +55,12 @@ export function GeneralPane(props: GeneralPaneProps) {
       <div class="osp-topbar">
         <div class="osp-scope-row">
           <div>
-            <div class="osp-title">General</div>
+            <div class="osp-title">{t('settings.general')}</div>
           </div>
         </div>
       </div>
 
-      <Show when={!loading()} fallback={<div class="osp-loading">Loading…</div>}>
+      <Show when={!loading()} fallback={<div class="osp-loading">{t('settings.loading')}</div>}>
         <div class="osp-scroll">
           <AppearanceSection
             appearanceRows={appearanceRows()}
@@ -68,7 +71,7 @@ export function GeneralPane(props: GeneralPaneProps) {
             onReset={(key) => resetAppearance(key as keyof AppearancePreferences)}
           />
           <BooleanPreferenceSection
-            title="System notifications"
+            title={t('settings.systemNotifications')}
             items={NOTIFICATION_PREFERENCES}
             values={notificationPrefs()}
             savedKey={savedKey()}
@@ -88,13 +91,27 @@ export function GeneralPane(props: GeneralPaneProps) {
           />
 
           <BooleanPreferenceSection
-            title="Timeline"
+            title={t('settings.timeline')}
             items={DISPLAY_PREFERENCES}
             values={prefs()}
             savedKey={savedKey()}
             onSave={(key, value) => saveValue(key as DisplayPreferenceKey, value)}
             onReset={(key) => resetValue(key as DisplayPreferenceKey)}
           />
+
+          <section class="osp-section">
+            <div class="osp-section-head">{t('settings.language')}</div>
+            <div class="osp-row">
+              <select
+                class="osp-select"
+                value={locale()}
+                onChange={(e) => setLocale(e.currentTarget.value as SupportedLocale)}
+              >
+                <option value="zh-CN">{t('settings.languageZh')}</option>
+                <option value="en">{t('settings.languageEn')}</option>
+              </select>
+            </div>
+          </section>
 
           <DiagnosticsSection
             diagnosticsOutput={diagnosticsOutput()}
@@ -121,8 +138,7 @@ export function GeneralPane(props: GeneralPaneProps) {
       </Show>
 
       <div class="osp-footer">
-        OpenPi desktop appearance, display, notification, and sound preferences are stored locally.
-        Theme selection updates Pi global settings.
+        {t('settings.preferencesDescription')} {t('settings.themeNote')}
       </div>
     </div>
   )

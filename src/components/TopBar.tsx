@@ -5,6 +5,7 @@
 import logoUrl from '@icons/icon.svg'
 import { GitBranch, MonitorCog } from 'lucide-solid'
 import { createSignal, Show } from 'solid-js'
+import { useTranslation } from '../lib/i18n/useTranslation'
 import type { ModelInfo } from '../lib/ipc'
 
 interface Props {
@@ -30,6 +31,7 @@ interface Props {
 }
 
 export function TopBar(props: Props) {
+  const { t } = useTranslation()
   const [editing, setEditing] = createSignal(false)
   const [draft, setDraft] = createSignal('')
   let inputRef!: HTMLInputElement
@@ -65,7 +67,7 @@ export function TopBar(props: Props) {
               type="button"
               class="topbar-name-btn"
               onClick={startEdit}
-              title="Click to rename session"
+              title={t('topbar.renameSession')}
             >
               {props.sessionName}
             </button>
@@ -86,13 +88,13 @@ export function TopBar(props: Props) {
           />
         </Show>
 
-        <span class="topbar-sep">in</span>
+        <span class="topbar-sep">{t('topbar.in')}</span>
 
         <button
           type="button"
           class="topbar-workspace-btn no-drag"
           onClick={props.onOpenWorkspace}
-          title="Change workspace"
+          title={t('topbar.changeWorkspace')}
         >
           {props.workspaceName}
         </button>
@@ -104,7 +106,7 @@ export function TopBar(props: Props) {
                 type="button"
                 class="topbar-branch no-drag"
                 onClick={props.onBranchClick}
-                title={props.onBranchClick ? 'Switch branch' : undefined}
+                title={props.onBranchClick ? t('topbar.switchBranch') : undefined}
               >
                 <GitBranch size={11} class="topbar-branch-icon" />
                 {getBranch()}
@@ -133,7 +135,7 @@ export function TopBar(props: Props) {
                 <span class="topbar-upstream-chip">{props.gitUpstream}</span>
               </Show>
               <Show when={props.gitChangeCount && props.gitChangeCount > 0}>
-                <span class="topbar-change-count" title="Changed files">
+                <span class="topbar-change-count" title={t('topbar.changedFiles')}>
                   {props.gitChangeCount}
                 </span>
               </Show>
@@ -151,8 +153,8 @@ export function TopBar(props: Props) {
           type="button"
           class="topbar-icon-btn no-drag"
           onClick={props.onOpenSettings}
-          title="Customize OpenPi"
-          aria-label="Customize OpenPi"
+          title={t('topbar.customize')}
+          aria-label={t('topbar.customize')}
         >
           <MonitorCog size={15} />
         </button>

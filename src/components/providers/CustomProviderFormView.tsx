@@ -1,6 +1,7 @@
 // biome-ignore-all lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: preserves existing provider modal backdrop click behavior.
 import { ArrowLeft, Plus, Trash2, X } from 'lucide-solid'
 import { For, Show } from 'solid-js'
+import { useTranslation } from '../../lib/i18n/useTranslation'
 import type { FormErrors, FormState, HeaderRow, ModelRow } from './providerHelpers'
 
 interface CustomProviderFormViewProps {
@@ -21,6 +22,8 @@ interface CustomProviderFormViewProps {
 }
 
 export function CustomProviderFormView(props: CustomProviderFormViewProps) {
+  const { t } = useTranslation()
+
   return (
     <div
       class="modal-backdrop"
@@ -35,11 +38,11 @@ export function CustomProviderFormView(props: CustomProviderFormViewProps) {
               type="button"
               class="cp-back-btn"
               onClick={props.onBack}
-              title="Back to provider list"
+              title={t('providers.backToList')}
             >
               <ArrowLeft size={14} strokeWidth={2} />
             </button>
-            <h2 class="cp-title">Custom provider</h2>
+            <h2 class="cp-title">{t('providers.customProviderTitle')}</h2>
           </div>
           <button type="button" class="modal-close-btn" onClick={props.onClose}>
             <X size={15} strokeWidth={2} />
@@ -48,24 +51,24 @@ export function CustomProviderFormView(props: CustomProviderFormViewProps) {
 
         <div class="cp-custom-form-body">
           <p class="cp-custom-form-desc">
-            Configure an OpenAI-compatible provider.
+            {t('providers.customProviderDesc')}
             <a
               class="cp-custom-form-link"
               href="https://github.com/earendil-works/pi/blob/main/packages/coding-agent/docs/models.md"
               target="_blank"
               rel="noopener noreferrer"
             >
-              See provider config docs
+              {t('providers.seeDocs')}
             </a>
             .
           </p>
 
-          <ProviderIdField {...props} />
-          <DisplayNameField form={props.form} onUpdateForm={props.onUpdateForm} />
-          <BaseUrlField {...props} />
-          <ApiKeyField form={props.form} onUpdateForm={props.onUpdateForm} />
-          <ModelsField {...props} />
-          <HeadersField {...props} />
+          <ProviderIdField {...props} t={t} />
+          <DisplayNameField form={props.form} onUpdateForm={props.onUpdateForm} t={t} />
+          <BaseUrlField {...props} t={t} />
+          <ApiKeyField form={props.form} onUpdateForm={props.onUpdateForm} t={t} />
+          <ModelsField {...props} t={t} />
+          <HeadersField {...props} t={t} />
 
           <Show when={props.formErrors.submit}>
             <p class="cp-key-error" style={{ 'margin-bottom': '8px' }}>
@@ -80,7 +83,7 @@ export function CustomProviderFormView(props: CustomProviderFormViewProps) {
               disabled={props.formSaving}
               onClick={props.onSubmit}
             >
-              {props.formSaving ? 'Adding…' : 'Add provider'}
+              {props.formSaving ? t('providers.adding') : t('providers.addProvider')}
             </button>
           </div>
         </div>
@@ -89,11 +92,15 @@ export function CustomProviderFormView(props: CustomProviderFormViewProps) {
   )
 }
 
-function ProviderIdField(props: CustomProviderFormViewProps) {
+interface FieldProps extends CustomProviderFormViewProps {
+  t: (key: string, options?: Record<string, unknown>) => string
+}
+
+function ProviderIdField(props: FieldProps) {
   return (
     <div class="cp-form-field">
       <label class="cp-form-label" for="provider-id">
-        Provider ID
+        {props.t('providers.providerId')}
       </label>
       <input
         id="provider-id"
@@ -107,9 +114,9 @@ function ProviderIdField(props: CustomProviderFormViewProps) {
       />
       <Show
         when={props.formErrors.providerId}
-        fallback={<p class="cp-form-hint">Lowercase letters, numbers, hyphens, or underscores</p>}
+        fallback={<p class="cp-form-hint">{props.t('providers.providerIdHint')}</p>}
       >
-        <p class="cp-form-hint is-error">{props.formErrors.providerId}</p>
+        <p class="cp-form-hint is-error">{props.t(`providers.${props.formErrors.providerId}`)}</p>
       </Show>
     </div>
   )
@@ -118,13 +125,14 @@ function ProviderIdField(props: CustomProviderFormViewProps) {
 interface BasicFieldProps {
   form: FormState
   onUpdateForm: (patch: Partial<FormState>) => void
+  t: (key: string, options?: Record<string, unknown>) => string
 }
 
 function DisplayNameField(props: BasicFieldProps) {
   return (
     <div class="cp-form-field">
       <label class="cp-form-label" for="provider-display-name">
-        Display name
+        {props.t('providers.displayName')}
       </label>
       <input
         id="provider-display-name"
@@ -137,11 +145,11 @@ function DisplayNameField(props: BasicFieldProps) {
   )
 }
 
-function BaseUrlField(props: CustomProviderFormViewProps) {
+function BaseUrlField(props: FieldProps) {
   return (
     <div class="cp-form-field">
       <label class="cp-form-label" for="provider-base-url">
-        Base URL
+        {props.t('providers.baseUrl')}
       </label>
       <input
         id="provider-base-url"
@@ -153,7 +161,7 @@ function BaseUrlField(props: CustomProviderFormViewProps) {
         spellcheck={false}
       />
       <Show when={props.formErrors.baseUrl}>
-        <p class="cp-form-hint is-error">{props.formErrors.baseUrl}</p>
+        <p class="cp-form-hint is-error">{props.t(`providers.${props.formErrors.baseUrl}`)}</p>
       </Show>
     </div>
   )
@@ -163,7 +171,7 @@ function ApiKeyField(props: BasicFieldProps) {
   return (
     <div class="cp-form-field">
       <label class="cp-form-label" for="provider-api-key">
-        API key
+        {props.t('providers.apiKey')}
       </label>
       <input
         id="provider-api-key"
@@ -174,18 +182,18 @@ function ApiKeyField(props: BasicFieldProps) {
         onInput={(event) => props.onUpdateForm({ apiKey: event.currentTarget.value })}
         autocomplete="off"
       />
-      <p class="cp-form-hint">Optional. Leave empty if you manage auth via headers.</p>
+      <p class="cp-form-hint">{props.t('providers.apiKeyOptional')}</p>
     </div>
   )
 }
 
-function ModelsField(props: CustomProviderFormViewProps) {
+function ModelsField(props: FieldProps) {
   return (
     <div class="cp-form-field">
-      <span class="cp-form-label">Models</span>
+      <span class="cp-form-label">{props.t('providers.models')}</span>
       <Show when={props.formErrors.models}>
         <p class="cp-form-hint is-error" style={{ 'margin-bottom': '6px' }}>
-          {props.formErrors.models}
+          {props.t(`providers.${props.formErrors.models}`)}
         </p>
       </Show>
       <div class="cp-models-list">
@@ -217,7 +225,7 @@ function ModelsField(props: CustomProviderFormViewProps) {
                   type="button"
                   class="cp-model-remove-btn"
                   onClick={() => props.onRemoveModel(index())}
-                  title="Remove model"
+                  title={props.t('providers.removeModel')}
                 >
                   <Trash2 size={13} strokeWidth={2} />
                 </button>
@@ -228,17 +236,18 @@ function ModelsField(props: CustomProviderFormViewProps) {
       </div>
       <button type="button" class="cp-add-row-btn" onClick={props.onAddModel}>
         <Plus size={12} strokeWidth={2.5} />
-        Add model
+        {props.t('providers.addModel')}
       </button>
     </div>
   )
 }
 
-function HeadersField(props: CustomProviderFormViewProps) {
+function HeadersField(props: FieldProps) {
   return (
     <div class="cp-form-field">
       <span class="cp-form-label">
-        Headers <span class="cp-form-label-optional">(optional)</span>
+        {props.t('providers.headers')}{' '}
+        <span class="cp-form-label-optional">{props.t('providers.headersOptional')}</span>
       </span>
       <Show when={props.form.headers.length > 0}>
         <div class="cp-models-list">
@@ -269,7 +278,7 @@ function HeadersField(props: CustomProviderFormViewProps) {
                   type="button"
                   class="cp-model-remove-btn"
                   onClick={() => props.onRemoveHeader(index())}
-                  title="Remove header"
+                  title={props.t('providers.removeHeader')}
                 >
                   <Trash2 size={13} strokeWidth={2} />
                 </button>
@@ -280,7 +289,7 @@ function HeadersField(props: CustomProviderFormViewProps) {
       </Show>
       <button type="button" class="cp-add-row-btn" onClick={props.onAddHeader}>
         <Plus size={12} strokeWidth={2.5} />
-        Add header
+        {props.t('providers.addHeader')}
       </button>
     </div>
   )

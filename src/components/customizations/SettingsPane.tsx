@@ -1,5 +1,6 @@
 import { FolderOpen, Globe } from 'lucide-solid'
 import { createEffect, createSignal, For, onCleanup, Show } from 'solid-js'
+import { useTranslation } from '../../lib/i18n/useTranslation'
 import type { PiSettings, SettingsResult } from '../../lib/ipc'
 import { SettingRow } from './SettingRow'
 import {
@@ -13,6 +14,7 @@ import type { SettingsPaneProps } from './settingsSections'
 import { SECTIONS } from './settingsSections'
 
 export function SettingsPane(props: SettingsPaneProps) {
+  const { t } = useTranslation()
   const [scope, setScope] = createSignal<'global' | 'project'>('global')
   const [result, setResult] = createSignal<SettingsResult | null>(null)
   const [loading, setLoading] = createSignal(false)
@@ -116,32 +118,31 @@ export function SettingsPane(props: SettingsPaneProps) {
               onClick={() => setScope('global')}
             >
               <Globe size={11} />
-              Global
+              {t('settings.global')}
             </button>
             <button
               type="button"
               class={`osp-scope-btn${scope() === 'project' ? ' is-active' : ''}`}
               onClick={() => setScope('project')}
               disabled={!props.hasCwd}
-              title={!props.hasCwd ? 'Open a workspace to access project settings' : undefined}
+              title={!props.hasCwd ? t('settings.projectDisabled') : undefined}
             >
               <FolderOpen size={11} />
-              Project
+              {t('settings.project')}
             </button>
           </div>
           <span class="osp-path">{pathLabel()}</span>
         </div>
       </div>
 
-      <Show when={!loading() || result()} fallback={<div class="osp-loading">Loading…</div>}>
+      <Show
+        when={!loading() || result()}
+        fallback={<div class="osp-loading">{t('settings.loading')}</div>}
+      >
         <div class="osp-scroll">
           <Show
             when={scope() !== 'project' || props.hasCwd}
-            fallback={
-              <div class="osp-empty">
-                Open a workspace to view and edit project-level Pi settings.
-              </div>
-            }
+            fallback={<div class="osp-empty">{t('settings.noWorkspace')}</div>}
           >
             <For each={SECTIONS}>
               {(section) => (
@@ -172,7 +173,7 @@ export function SettingsPane(props: SettingsPaneProps) {
       </Show>
 
       <div class="osp-footer">
-        <code>{pathLabel()}</code> — edit directly for advanced options not listed above.
+        <code>{pathLabel()}</code> — {t('settings.advancedOptionsHint')}
       </div>
     </div>
   )

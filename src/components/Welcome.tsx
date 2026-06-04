@@ -1,6 +1,7 @@
 import logoUrl from '@icons/icon.svg'
 import { ExternalLink, FolderOpen } from 'lucide-solid'
 import { createEffect, createSignal, Show } from 'solid-js'
+import { useTranslation } from '../lib/i18n/useTranslation'
 
 type WelcomeProps = {
   appName: string
@@ -10,6 +11,7 @@ type WelcomeProps = {
 }
 
 export function Welcome(props: WelcomeProps) {
+  const { t } = useTranslation()
   const [firstRun, setFirstRun] = createSignal(false)
 
   createEffect(() => {
@@ -23,34 +25,56 @@ export function Welcome(props: WelcomeProps) {
         <span class="welcome-logo-scan" aria-hidden="true" />
       </div>
       <div class="eyebrow">{props.appName}</div>
-      <h1>A desktop workbench for Pi coding agent</h1>
-      <p>Local-first sessions, model controls, and recoverable agent state.</p>
+      <h1>{t('welcome.title')}</h1>
+      <p>{t('welcome.subtitle')}</p>
 
       <Show when={firstRun()}>
         <div class="welcome-onboarding">
           <p class="welcome-onboarding-intro">
-            <strong>Getting started:</strong> Open a workspace directory to start a Pi session. Pi
-            reads your project files, responds to prompts, and edits code — all with full context of
-            your repository.
+            <strong>{t('welcome.gettingStarted')}</strong> {t('welcome.onboardingIntro')}
           </p>
           <div class="welcome-onboarding-steps">
             <div class="welcome-step">
               <span class="welcome-step-num">1</span>
-              <span>
-                Click <strong>Open workspace</strong> and select your project folder
-              </span>
+              <span innerHTML={t('welcome.step1')} />
             </div>
             <div class="welcome-step">
               <span class="welcome-step-num">2</span>
-              <span>
-                Type <kbd>/goal</kbd> to set an objective, or just start chatting
-              </span>
+              <span innerHTML={t('welcome.step2')} />
             </div>
             <div class="welcome-step">
               <span class="welcome-step-num">3</span>
-              <span>Review changes in the Git panel, then stage and commit</span>
+              <span innerHTML={t('welcome.step3')} />
             </div>
           </div>
+
+          <div class="welcome-deepseek-card">
+            <div class="welcome-deepseek-header">
+              <span class="welcome-deepseek-badge">{t('providers.deepseekRecommended')}</span>
+            </div>
+            <h3>{t('welcome.deepseekQuickStart.title')}</h3>
+            <p>{t('welcome.deepseekQuickStart.description')}</p>
+            <div class="welcome-deepseek-steps">
+              <div class="welcome-deepseek-step">
+                <span>1.</span> {t('welcome.deepseekQuickStart.step1')}
+              </div>
+              <div class="welcome-deepseek-step">
+                <span>2.</span> {t('welcome.deepseekQuickStart.step2')}
+              </div>
+              <div class="welcome-deepseek-step">
+                <span>3.</span> {t('welcome.deepseekQuickStart.step3')}
+              </div>
+            </div>
+            <a
+              href="https://platform.deepseek.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="welcome-link"
+            >
+              <ExternalLink size={13} /> {t('welcome.deepseekQuickStart.connectButton')}
+            </a>
+          </div>
+
           <div class="welcome-onboarding-links">
             <a
               href="https://github.com/earendil-works/pi"
@@ -58,7 +82,7 @@ export function Welcome(props: WelcomeProps) {
               rel="noopener noreferrer"
               class="welcome-link"
             >
-              <ExternalLink size={13} /> Pi repo
+              <ExternalLink size={13} /> {t('welcome.piRepo')}
             </a>
             <a
               href="https://github.com/heyhuynhgiabuu/openpi"
@@ -66,7 +90,7 @@ export function Welcome(props: WelcomeProps) {
               rel="noopener noreferrer"
               class="welcome-link"
             >
-              <ExternalLink size={13} /> OpenPi source
+              <ExternalLink size={13} /> {t('welcome.openpiSource')}
             </a>
           </div>
         </div>
@@ -74,7 +98,7 @@ export function Welcome(props: WelcomeProps) {
 
       <div class="welcome-actions">
         <button type="button" class="button-primary" onClick={props.onOpen}>
-          <FolderOpen size={15} /> Open workspace
+          <FolderOpen size={15} /> {t('welcome.openWorkspace')}
         </button>
       </div>
 
